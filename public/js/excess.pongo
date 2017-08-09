@@ -1,0 +1,47 @@
+// $("[data-toggle='popover']").on('shown.bs.popover',function(){
+//     //$('#simile-box').val($('#simile-sticker').attr('data-simile-sticker'));
+//     $('#simile-add-button').on('click',function(){
+//         var simileSticker = $('#simile-sticker');
+//         var simileBox = $('#simile-box');
+//         if( simileBox.val() =='' ){
+//             //do nothing
+//         }else{
+//             if(simileSticker.attr('data-simile-sticker') == ''){
+//                 simileSticker.attr('data-simile-sticker',simileBox.val());
+//                 console.log(simileSticker.attr('data-simile-sticker'));
+//             }else{
+//                 var oldSimiles = simileSticker.attr('data-simile-sticker');
+//                 simileSticker.attr('data-simile-sticker',oldSimiles+ ' :simile-mark: ' + simileBox.val());
+//                 console.log(simileSticker.attr('data-simile-sticker'));
+//             }
+//         }
+//
+//     });
+//
+//
+//
+// });
+//
+// $("[data-toggle='popover']").on('shown.bs.popover',function(){
+//     //$('#simile-box').val($('#simile-sticker').attr('data-simile-sticker'));
+//     $('#pun-add-button').on('click',function(){
+//         var simileSticker = $('#pun-sticker');
+//         var simileBox = $('#pun-box');
+//         if( simileBox.val() =='' ){
+//             //do nothing
+//         }else{
+//             if(simileSticker.attr('data-pun-sticker') == ''){
+//                 simileSticker.attr('data-pun-sticker',simileBox.val());
+//                 console.log(simileSticker.attr('data-pun-sticker'));
+//             }else{
+//                 var oldSimiles = simileSticker.attr('data-pun-sticker');
+//                 simileSticker.attr('data-pun-sticker',oldSimiles+ ' :pun-mark: ' + simileBox.val());
+//                 console.log(simileSticker.attr('data-pun-sticker'));
+//             }
+//         }
+//
+//     });
+//
+//
+//
+// });
