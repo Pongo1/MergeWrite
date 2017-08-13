@@ -61,7 +61,8 @@
                                     <li><a href='{{ route('make.note') }}'><span class='glyphicon glyphicon-comment text text-success' ></span> New Piece</a></li>
                                     <li><a style='cursor:pointer' type='button' data-toggle='modal' data-target='#book-Name'><span class="glyphicon glyphicon-book" style='color:orange'></span> Create book</a></li>
 
-                                    <li><a style='cursor:pointer'><span class="glyphicon glyphicon-settings" style='color:orange'></span> settings</a></li>
+                                    <li><a style='cursor:pointer'><span class="glyphicon glyphicon-cog" style='color:orange'></span> Settings</a></li>
+                                    <li><a style='cursor:pointer' href='{{route('profile.show',Auth::user()->name)}}'><span class="glyphicon glyphicon-user" style='color:orange'></span> Your profile</a></li>
 
                                     <li>
                                         <a href="{{ route('logout') }}"

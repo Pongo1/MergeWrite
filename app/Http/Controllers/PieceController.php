@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\EnglishDeviceBag;
 use Session;
+
 class PieceController extends Controller
 {
     public function addEnglishTipItem($key, $deviceName, $text){
@@ -14,6 +15,44 @@ class PieceController extends Controller
         Session::put('DeviceBag',$device_bag);
         Session::put('devicesExist','Yes');
     }
+
+    public function showDevicesModal(){
+        return view('fragments.devicesmodalrefresh');
+    }
+    public function forSkeletonText(){
+        return view('fragments.forskeleton');
+    }
+    public function temporarySave(Request $request){
+        return Session::put('temporaryPiece',['title' => $request->title, 'body' =>$request->body,'skeletal_form' => $request->skeletal_form]);
+    }
+
+    public function delDeviceChild($deviceMother,$motherDeviceID, $childID){
+        $existingBag = Session::get('DeviceBag');
+        $childArray = explode(':'.$deviceMother.'-mark'.':',$existingBag->devices[$motherDeviceID]['text']);
+        unset($childArray[$childID]);
+        $scraps = '';
+        if(count($childArray) > 1){
+            foreach ($childArray as $child) {
+                if($scraps == ''){
+                    $scraps = $child;
+                }else{
+                    $scraps = $scraps.':'.$deviceMother.'-mark'.':'.$child;
+                }
+            }
+            $existingBag->devices[$motherDeviceID]['text'] = $scraps;
+
+        }elseif (count($childArray) == 1 ) {
+            $scraps = $childArray[0];
+            $existingBag->devices[$motherDeviceID]['text'] = $scraps;
+        }else{
+            //delete the mother device itself
+            unset($existingBag->devices[$motherDeviceID]);
+            $existingBag->deviceNumber = $existingBag->deviceNumber -1;
+        }
+        Session::put('DeviceBag',$existingBag);
+    }
+
+
 
 
 
@@ -40,17 +79,14 @@ class PieceController extends Controller
 
     public function showSession(){
 
-        print_r(Session::get('DeviceBag')->devices);
-            // $devBag = Session::has('deviceBag') ? Session::get('deviceBag') : null;
-            // $engDeviceBag = new EnglishDeviceBag($devBag);
-            // $engDeviceBag->addDevice(1,'metaphor','A lion in disguise');
-            // Session::put('deviceBag',$engDeviceBag);
-            // print_r( Session::get('deviceBag'));
-            // echo '<br>';
-            // echo '<br>';
-            // echo '<br>';
-            // $dv =Session::get('deviceBag')->devices;
-            // print_r(Session::get('deviceBag')->devices);
+        //print_r(Session::get('DeviceBag')->devices);
+        echo '<br>'; echo '<br>'; echo '<br>'; echo '<br>';
+
+        print_r( Session::all());
+         echo '<br>';
+
+        print_r(Session::get('temporaryPiece'));
+
 
     }
 
@@ -61,12 +97,6 @@ class PieceController extends Controller
 
 
     public function Trial(){
-
-            // if(in_array('seventeen',['shit','gbonatuin','seventeen','fuck'])){
-            //     echo 'match found';
-            // }else{
-            //     echo 'match not found';
-            // }
             foreach (Session::get('DeviceBag')->devices as $device) {
                 # code...
                 print_r($device);

@@ -9,6 +9,7 @@ use App\Delete;
 use App\User;
 use App\Book;
 use Session;
+use App\EnglishDeviceBag;
 
 
 class NotesController extends Controller
@@ -26,15 +27,61 @@ class NotesController extends Controller
     	$new_note->title = $request->title;
     	$new_note->note = Crypt::encryptString($request->note);
         $new_note->user_id =$userId;
+        $new_note->skeleton_form = $request->piece_skeletal_form;
+        $new_note->mother_values = $request->mother_values;
+        $new_note->mother_names = $request->mother_names;
     	if ($new_note->save()){
+            Session::forget('DeviceBag');
+            Session::forget('temporaryPiece');
+            Session::forget('devicesExist');
     		return redirect()->route('home',Session::get('username'))->with('success','Your note "'.$new_note->title.'" has been successfully saved!');
     	}
-
     }
 
+    public function revampPiece(Request $request,$pieceRevampID){
+        //save piece body and title and set revamp value
+        //clear Device Bag before we start the revamp process
+        $revampBag = new EnglishDeviceBag(null);
+        if(Session::has('DeviceBag')){
+            Session::forget('DeviceBag');
+            Session::forget('devicesExist');
+        }
+        $found = Note::find($pieceRevampID);
+        $motherNameList = explode('<--->',$found->mother_names);
+        $motherValueList = explode('<--->',$found->mother_values);
+        $count = 0;
+        foreach ( $motherNameList as  $name) {
+                $motherKey = $this->lookForMother($name);
+                $revampBag->addDevice($motherKey,$name,$motherValueList[$count]);
+                $count++;
+        }
+        Session::put('DeviceBag',$revampBag);
+        Session::put('devicesExist','yes');
+        Session::put('temporaryPiece',['title' => $request->piece_title, 'body' =>$request->piece_body , 'skeletal_form'=>'']);
+        Session::put('revamp','yes');
+        return view('Notes.make-note',compact('pieceRevampID'));
+    }
+
+    public function cancelRevamp(){
+        Session::forget('DeviceBag');
+        Session::forget('revamp');
+        Session::forget('devicesExist');
+        Session::forget('temporaryPiece');
+        return redirect()->route('home',Session::get('username'));
+    }
+    public function doRevamp(Request $request){
+        $found_piece = Note::find($request->pieceRevampID);
+        if($found_piece->update([ 'title' => $request->title, 'body' =>$request->title, 'skeleton_form' =>$request->piece_skeletal_form,'mother_values'=>$request->mother_values,'mother_names'=>$request->mother_names])){
+            Session::forget('DeviceBag');
+            Session::forget('revamp');
+            Session::forget('devicesExist');
+            Session::forget('temporaryPiece');
+            return redirect()->route('home',Session::get('username'))->with('success','"'.$request->title.'" has been successfully revamped!');
+        }
+    }
     public function editNote(Request $request,$id){
         $found_note = Note::find($id);
-        if ($found_note->update(['title'=>$request->title,'note'=>Crypt::encryptString($request->note)])){
+        if ($found_note->update(['title'=>$request->title,'note'=>Crypt::encryptString($request->note),'skeleton_form' =>$request->skeletal_form])){
             return back()->with('success','All changes to "'.$request->title.'" have been made successfully!');
         }
     }
@@ -50,34 +97,78 @@ class NotesController extends Controller
         }
     }
 
+    public function lookForMother($motherName){
+        switch ($motherName) {
+            case 'Metaphor':
+                return 1;
+                break;
+            case 'Simile':
+                return 2;
+                break;
+            case 'Pun':
+                return 3;
+                break;
+            case 'Proverb':
+                return 4;
+                break;
+            case 'Alliteration':
+                return 5;
+                break;
+            case 'Allegory':
+                return 6;
+                break;
+            case 'Euphemism':
+                return 7;
+                break;
+            case 'Foreshadowing':
+                return 8;
+                break;
+            case 'Imagery':
+                return 9;
+                break;
+            case 'Personification':
+                return 10;
+                break;
+            case 'Epigraph':
+                return 11;
+                break;
+            case 'Hyperbole':
+                return 12;
+                break;
+            case 'Idiom':
+                return 13;
+                break;
+            case 'Anecdote':
+                return 14;
+                break;
+            case 'Anthropomorphism':
+                return 15;
+                break;
+            case 'Antithesis':
+                return 16;
+                break;
+            case 'Assonance':
+                return 17;
+                break;
+            case 'Characterisation':
+                return 18;
+                break;
+            case 'Euphony':
+                return 19;
+                break;
+            case 'Flashback':
+                return 20;
+                break;
+            case 'Hyperbaton':
+                return 21;
+                break;
 
-
-    public function show(){
-        $s ="ASCII stands for American Standard Code for Information Interchange. Computers can only understand numbers, so an ASCII code is the numerical representation of a character such as 'a' or '@' or an action of some sort. ASCII was developed a long time ago and now the non-printing characters are rarely used for their original purpose. Below is the ASCII character table and this includes descriptions of the first 32 non-printing characters. ASCII was actually designed for use with teletypes and so the descriptions are somewhat obscure. If someone says they want your CV however in ASCII format, all this means is they want 'plain' text with no formatting such as tabs, bold or underscoring - the raw format that any computer can understand. This is usually so they can easily import the file into their own applications without issues. Notepad.exe creates ASCII text, or in MS Word you can save a file as 'text only'";
-        $enc =  $this->encrypt($s);
-
-        echo $enc;
-
-        echo '<br>';
-
-        echo $this->decrypt($enc);
-            // $string = str_split("string and shit");
-            // $ar = [];
-            // foreach ($string as  $letter) {
-            //     echo ord($letter);
-            //     echo "<br>";
-            //     echo ord($letter)+20 < 256 ? ord($letter)+20 : ord($letter).(256 -ord($letter));
-            //     array_push($ar,ord($letter)+20 < 256 ? ord($letter)+20 : ord($letter).(256 -ord($letter)));
-            //     echo "<br>";
-            //     # code...
-            // }
-
-            // foreach ($ar as $value) {
-            //     echo chr($value-20);
-            //     # code...
-            // }
-
+            default:
+                break;
+        }
     }
+
+
 
 
     public function encrypt($string){

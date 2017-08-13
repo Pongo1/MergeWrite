@@ -32,26 +32,7 @@ $('body').css('display','none');
         },7000);
     },5000)
 
-    $('#break').on('click',function(){
-        var text = document.getElementById('note-view').innerHTML;
-        alert(text.replace('Mauris','fuck'));
-        text.innerHTML = text.replace('Mauris','fuck');
-    });
 
-    $('#show-comments').on('click',function(event){
-        event.preventDefault();
-        var This = $(this);
-        var toggle_value = This.attr('data-toggled');
-        if (toggle_value =='true'){
-            $("#comment-box").slideUp(500);
-            This.attr('data-toggled','false');
-        }else{
-            $("#comment-box").slideDown(500);
-            This.attr('data-toggled','true');
-        }
-
-
-    });
 
     $(function(){
         $('[data-toggle="tooltip"]').tooltip()
@@ -74,7 +55,7 @@ $('body').css('display','none');
         }else{
 
             $('#notification-area').fadeOut(500, function(){
-                $('#piece-board').show(300);
+                $('#piece-board').fadeIn(300);
                 This.attr('data-toggled','true');
                 $('#pongo-seat').show(100);
             });
@@ -82,45 +63,6 @@ $('body').css('display','none');
     });
     //----------------------------------------------------------- END OF SHOW NOTIFICATIONS -----------------------------------------------------------------
 
-                //CANCELLED --CHANGed MY MIND
-                // $("[data-toggle='popover']").on('shown.bs.popover',function(){
-                //     //listen for the popover add button to be clicked
-                //     $('#metaphor-add').on('click',function(){
-                //         var v = document.getElementById('metaphor_text');
-                //         //This is for the main metaphor banner
-                //         var metaphorObj = $('#eng-tip-metaphor');
-                //         //get the text inside the metaphor-box
-                //
-                //
-                //             //console.log($('#eng-tip-metaphor').data('bs.popover').tip().find('#metaphor_text').text());
-                //             $('#eng-tip-metaphor').data('bs.popover').options.content = 'shit';
-                //
-                //
-                //
-                //
-                //             // var metaphorOldText = v.innerHTML;
-                //             // //get the old metaphors
-                //             // var oldMetaphors = metaphorObj.attr('data-metaphor-marked');
-                //             //
-                //             // //check if the metaphor box is empty
-                //             // if(metaphorOldText == ''){
-                //             //     //do nothing
-                //             // }else{
-                //             //     //check if there are any old metaphors
-                //             //     if(oldMetaphors ==''){
-                //             //         //if there aren't just add the new one
-                //             //         metaphorObj.attr('data-metaphor-marked', metaphorText);
-                //             //     }else{
-                //             //         //if there are, append ':metaphor-indication:' to  the new metaphors and then to the old metaphors
-                //             //         $(this).popover('show');
-                //             //         metaphorObj.attr('data-metaphor-marked', oldMetaphors + ' :metaphor-indication: ' + v.innerHTML);
-                //             //         console.log(metaphorObj.attr('data-metaphor-marked'));
-                //             //     }
-                //             // }
-                //
-                //     });
-                // });
-                //END OF CANCELLED
 
 
         //activate popover
@@ -142,7 +84,7 @@ $('body').css('display','none');
     $('#loginPane').animate({top:'40px'},1500, function(){
     });
     $('#makePane').animate({height:'450px'},1000);
-    $('#seePane').animate({top:'70px'},1300);
+
     $('#regPane').animate({top:'40px'},1500);
     $('#allPane').animate({width:'770px'},500);
 
@@ -156,25 +98,25 @@ setTimeout(function(){
 
 
 
-//--------------------_SCROLL EFFECT ----------------------------
-$(window).on("load",function(){
-    $(window).scroll(function(){
-        var windowBottom = $(this).scrollTop() + $(this).innerHeight();
-        $(".piece-post").each(function(){
-
-            var objectBottom = $(this).offset().top + $(this).outerHeight();
-
-            if(objectBottom < windowBottom){
-                if($(this).css("opacity")==0.3){
-                    $(this).fadeTo(500,1);
-                }
-            }else{
-                if($(this).css("opacity") == 1){
-                    $(this).fadeTo(500,0.3);
-                }
-            }
-        });
-
-    }).scroll();
-});
-//------------------------------------------------------ END OF SCROLL EFFECT-----------------------------------------
+    // //--------------------_SCROLL EFFECT ----------------------------
+    // $(window).on("load",function(){
+    //     $(window).scroll(function(){
+    //         var windowBottom = $(this).scrollTop() + $(this).innerHeight();
+    //         $(".piece-post").each(function(){
+    //
+    //             var objectBottom = $(this).offset().top + $(this).outerHeight();
+    //
+    //             if(objectBottom < windowBottom){
+    //                 if($(this).css("opacity")==0.3){
+    //                     $(this).fadeTo(500,1);
+    //                 }
+    //             }else{
+    //                 if($(this).css("opacity") == 1){
+    //                     $(this).fadeTo(500,0.3);
+    //                 }
+    //             }
+    //         });
+    //
+    //     }).scroll();
+    // });
+    // //------------------------------------------------------ END OF SCROLL EFFECT-----------------------------------------

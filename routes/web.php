@@ -19,21 +19,56 @@ Route::get('/', function () {
 });
 
 //---------------------------------FOREIGN LINKS----------------------------------
-Route::get('latest-pieces',[
-  'uses'=>'PublishesController@showNew',
-  'as'=>'pieces.latest','middleware'=>'auth']);
+
 Route::get('add-english-tip/{key}/{deviceName}/{text}','PieceController@addEnglishTipItem');
 Route::get('device-show','PieceController@showSession');
 Route::get('device-clear','PieceController@clearDeviceBag');
 Route::get('show-my-devices','PieceController@devicesInUse');
 Route::get('save-devices','PieceController@Trial');
+Route::get('load-piece-body','PieceController@pieceBodyLoad');
+Route::get('load-for-skeleton-pane','PieceController@forSkeletonText');
+Route::get('delete-device-child/{deviceMother}/{motherDeviceID}/{childID}','PieceController@delDeviceChild');
+Route::get('refresh-devices-view','PieceController@showDevicesModal');
+Route::get('temporary-piece-save','PieceController@temporarySave');
+
 //-----------------------------------------------------------------------------
 
 
 
 
 
-//--------------------------------------------------BBOOKLINKS---------------
+//--------------------------------------------------BOOKLINKS-------------------------------------------------------
+Route::get('refresh-likes/{piece_id}',[
+  'uses'=>'PublishesController@refreshLikes',
+  'as'=>'likes.refresh','middleware'=>'auth']);
+
+Route::get('like/{piece_id}',[
+  'uses'=>'PublishesController@like',
+  'as'=>'like','middleware'=>'auth']);
+
+Route::get('refresh-comments/{piece_id}',[
+  'uses'=>'PublishesController@refreshComments',
+  'as'=>'comments.refresh','middleware'=>'auth']);
+
+Route::get('......../{pieceName}',[
+  'uses'=>'PublishesController@PieceFullShow',
+  'as'=>'piece.full','middleware'=>'auth']);
+
+Route::get('comment-on-piece',[
+  'uses'=>'PublishesController@commentOn',
+  'as'=>'comment.make','middleware'=>'auth']);
+
+Route::post('full-piece/{pieceName}',[
+  'uses'=>'PublishesController@PieceFullShow',
+  'as'=>'piece.full','middleware'=>'auth']);
+
+Route::get('latest-pieces',[
+  'uses'=>'PublishesController@showNew',
+  'as'=>'pieces.latest','middleware'=>'auth']);
+
+Route::get('publish-piece/{pieceID}',[
+    'uses'=>'PublishesController@publishPiece',
+    'as'=>'publish','middleware'=>'auth']);
 
 Route::get('edit-page/{page_id}',[
   'uses'=>'BookController@editPage',
@@ -96,6 +131,14 @@ Route::get('page-delete/{page_id}',[
 //-----------------------------------------------------------------------------
 Auth::routes();
 
+Route::post('change-picture',[
+  'uses'=>'HomeController@changeProfilePicture',
+  'as'=>'picture.change','middleware'=>'auth']);
+
+Route::get('show-profile/{username}',[
+  'uses'=>'HomeController@showProfile',
+  'as'=>'profile.show','middleware'=>'auth']);
+
 Route::get('show',['uses'=>'NotesController@show','as'=>'show.profile','middleware'=>'auth']);
 
 Route::get('book-show','BookController@show');
@@ -104,7 +147,11 @@ Route::get('save-note/{userId}',['uses'=>'NotesController@saveNote','as'=>'save.
 Route::get('make-note',['uses'=>'NotesController@makeNote','as'=>'make.note','middleware'=>'auth']);
 
 Route::get('edit-note/{id}',['uses'=>'NotesController@editNote','as' =>'edit.note','middleware'=>'auth']);
+Route::post('revamp-piece/{pieceRevampID}',['uses'=>'NotesController@revampPiece','as' =>'revamp','middleware'=>'auth']);
+Route::get('save-revamped',['uses'=>'NotesController@doRevamp','as' =>'revamp.do','middleware'=>'auth']);
 
+
+Route::get('cancel-revamp','NotesController@cancelRevamp');
 Route::get('see-note/{id}',['uses'=>'NotesController@seeNote','as' =>'see.note','middleware'=>'auth']);
 
 Route::get('delete-note/{id}',['uses'=>'NotesController@deleteNote','as' =>'delete.note','middleware'=>'auth']);
