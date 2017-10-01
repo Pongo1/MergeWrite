@@ -17,7 +17,7 @@ In this program every device has an integer value...
 
 
 @if(Session::has('DeviceBag'))
-    <p>Devices that have been used. caspolo
+    <p>Devices that have been used</p>
     @foreach (Session::get('DeviceBag')->devices as $device)
         <hr>
         @php
@@ -85,6 +85,9 @@ In this program every device has an integer value...
                     break;
                 case 'Hyperbaton':
                     echo "<h3 class='label label-warning solid-rank' style='background-color: yellow ; color:black ;' >".$device['name']."</h3><br><br>";
+                    break;
+                case 'Thesisstatement':
+                    echo "<h3 class='label label-warning solid-rank' style='background-color: #282828 ; color:white ;' >".$device['name']."</h3><br><br>";
                     break;
                 default:
                     # code...
@@ -178,3 +181,20 @@ In this program every device has an integer value...
         }
     }
 @endphp
+<script>
+    $('.children').on('click',function(event){
+        event.preventDefault();
+        var This = $(this);
+        var deviceName =This.attr('data-device-mother');
+        var deviceMotherID =This.attr('data-device-motherID');
+        var deviceChildID =  This.attr('data-childID');
+
+        $.ajax({method:'get',url:'/delete-device-child/'+deviceName+'/'+deviceMotherID+'/'+deviceChildID
+            }).done(function(){
+                $('#modal-body').load('/refresh-devices-view').hide().fadeIn(600);
+                $('#devicesInUseContent').load('/show-my-devices');
+                $("#forSkeletonView").load('/load-for-skeleton-pane');
+            });
+    });
+
+</script>

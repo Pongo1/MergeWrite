@@ -8,6 +8,8 @@ class Publish extends Model
 {
     protected $table ='publishes';
 
+    protected $fillable=['profile_picture','piece_title','piece_body','skeleton_form','unpublished'];
+
     public function user(){
         $this->belongsTo('App\User');
     }
@@ -25,5 +27,8 @@ class Publish extends Model
 
     public function parentPiece(){
         return $this->belongsTo('App\Note');
+    }
+    public function grabbers(){
+        return $this->belongsToMany('App\User');
     }
 }

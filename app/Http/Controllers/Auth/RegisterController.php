@@ -7,6 +7,9 @@ use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Foundation\Auth\RegistersUsers;
 use Session;
+use App\Rank;
+use App\UserRank;
+use App\UserBank;
 
 class RegisterController extends Controller
 {
@@ -28,7 +31,7 @@ class RegisterController extends Controller
      *
      * @var string
      */
-           
+
 
     protected $redirectTo = '/home';
 
@@ -54,6 +57,7 @@ class RegisterController extends Controller
             'name' => 'required|string|max:255',
             'email' => 'required|string|email|max:255|unique:users',
             'password' => 'required|string|min:6|confirmed',
+            'user_gender' => 'required'
         ]);
     }
 
@@ -66,14 +70,52 @@ class RegisterController extends Controller
      */
     protected function create(array $data)
     {
-        Session::put('username',$data['name']); 
+        Session::put('username',$data['name']);
         $this->redirectTo = '/home/'.Session::get('username');
-        return User::create([
+        $something =  User::create([
             'name' => $data['name'],
             'email' => $data['email'],
             'password' => bcrypt($data['password']),
+            'gender' =>$data['user_gender'],
+            'profile_picture'=>$data['user_gender'] == 'Female' ? $this->defaultAvatar(0) : $this->defaultAvatar(mt_rand(1,2))
         ]);
+        //when the users are created, give them a rank -->looker
+        $found = User::where(['name'=>$data['name'],'email'=>$data['email']])->first();
+        $beginner = Rank::find(10);
+        $newRank = new UserRank();
+        $newRank->rank_worth = $beginner->rank_worth;
+        $newRank->rank_cost = $beginner->rank_cost;
+        $newRank->rank = $beginner->rank;
+        $newRank->number = $beginner->id;
+        $newRank->user_id = $found->id;
+        $newRank->rank_description = '';
+        $newRank->save();
+        //create a bank account for the user
+        $account = new UserBank();
+        $account->user_id = $found->id;
+        $account->coins = 50;
+        $account->save();
+        //-----------------------------------------------------------------------------
+        return $something;
     }
 
-   
+    public function defaultAvatar($number){
+        switch ($number) {
+            case 0:
+                return 'imgs/avatar-female.png';
+                break;
+            case 1:
+                return 'imgs/ninja-avatar-male.jpeg';
+                break;
+            case 2:
+                return 'imgs/chick-samurai-avatar.png';
+                break;
+            default:
+                # code...
+                break;
+        }
+
+    }
+
+
 }

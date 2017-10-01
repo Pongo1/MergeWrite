@@ -10,27 +10,51 @@ use App\User;
 use App\Book;
 use Session;
 use App\EnglishDeviceBag;
+use App\Publish;
+use App\PieceAccount;
+use Auth;
 
 
 class NotesController extends Controller
 {
     public function seeNote($id){
+        $mentors = User::where('is_mentor',1)->paginate(50);
     	$found_note = Note::find($id);
-    	return view('Notes.see-note',compact('found_note'));
+    	return view('Notes.see-note',compact('found_note','mentors'));
     }
     public function makeNote(){
     	return view('Notes.make-note');
     }
 
     public function saveNote(Request $request,$userId){
+        //save the note
     	$new_note = new Note();
     	$new_note->title = $request->title;
-    	$new_note->note = Crypt::encryptString($request->note);
+    	$new_note->note = $request->note;
         $new_note->user_id =$userId;
+        $new_note->published = 0;
         $new_note->skeleton_form = $request->piece_skeletal_form;
         $new_note->mother_values = $request->mother_values;
         $new_note->mother_names = $request->mother_names;
-    	if ($new_note->save()){
+        $new_note->save();
+        //create a new published form of the note, but hidden
+        $secretPublish = new Publish();
+        $secretPublish->publisher_name = Auth::user()->name;
+        $secretPublish->profile_picture = Auth::user()->profile_picture;
+        $secretPublish->user_id = Auth::user()->id;
+        $secretPublish->publisher_rank = Auth::user()->rank->rank;
+        $secretPublish->piece_title = $request->title;
+        $secretPublish->piece_body = $request->note;
+        $secretPublish->skeleton_form = $request->piece_skeletal_form;
+        $secretPublish->unpublished = 1;
+        $justSavedNote =  Note::where(['user_id'=>Auth::user()->id,'title'=>$request->title])->first();
+        $secretPublish->note_id =$justSavedNote->id;
+    	if ($secretPublish->save()){
+            //open a new account for the piece
+            $account = new PieceAccount();
+            $account->publish_id = Publish::where('note_id',$justSavedNote->id)->first()->id;
+            $account->coins = 0;
+            $account->save();
             Session::forget('DeviceBag');
             Session::forget('temporaryPiece');
             Session::forget('devicesExist');
@@ -72,6 +96,8 @@ class NotesController extends Controller
     public function doRevamp(Request $request){
         $found_piece = Note::find($request->pieceRevampID);
         if($found_piece->update([ 'title' => $request->title, 'body' =>$request->title, 'skeleton_form' =>$request->piece_skeletal_form,'mother_values'=>$request->mother_values,'mother_names'=>$request->mother_names])){
+            $publishedVersion = Publish::find($found_piece->publish->id);
+            $publishedVersion->update(['piece_title' => $request->title, 'piece_body' =>$request->title, 'skeleton_form' =>$request->piece_skeletal_form]);
             Session::forget('DeviceBag');
             Session::forget('revamp');
             Session::forget('devicesExist');
@@ -81,7 +107,7 @@ class NotesController extends Controller
     }
     public function editNote(Request $request,$id){
         $found_note = Note::find($id);
-        if ($found_note->update(['title'=>$request->title,'note'=>Crypt::encryptString($request->note),'skeleton_form' =>$request->skeletal_form])){
+        if ($found_note->update(['title'=>$request->title,'note'=>$request->note,'skeleton_form' =>$request->skeletal_form])){
             return back()->with('success','All changes to "'.$request->title.'" have been made successfully!');
         }
     }
@@ -96,7 +122,6 @@ class NotesController extends Controller
             }
         }
     }
-
     public function lookForMother($motherName){
         switch ($motherName) {
             case 'Metaphor':
@@ -162,14 +187,14 @@ class NotesController extends Controller
             case 'Hyperbaton':
                 return 21;
                 break;
+            case 'Thesisstatement':
+                return 22;
+                break;
 
             default:
                 break;
         }
     }
-
-
-
 
     public function encrypt($string){
         //get the raw string

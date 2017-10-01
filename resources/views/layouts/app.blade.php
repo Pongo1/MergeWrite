@@ -18,8 +18,16 @@
     <link href="{{ asset('css/merge.css') }}" rel="stylesheet">
 </head>
 <body>
+    <style> 
+        @if(!Auth::guest())
+            #app{
+            transition: margin-left 0.5s;
+            margin-left:250px;
+            }
+        @endif
+    </style>
     <div id="app">
-        <nav class="navbar navbar-inverse navbar-fixed-top thenavbar solid-two ">
+        <nav class="navbar navbar-inverse  thenavbar  " style='margin-bottom:0'>
             <div class="container">
                 <div class="navbar-header">
 
@@ -32,7 +40,9 @@
                     </button>
 
                     <!-- Branding Image -->
-                    <a class="navbar-brand solid-text-light-two" href="{{ url('/') }}" style="color:white" id="meTymNav"><span style='color:black'>@</span>Merge Write</a>
+                    <a class="navbar-brand" data-toggled='true' id='side-bar-toggler' style="color:white"><i class='glyphicon glyphicon-menu-hamburger' ></i></a>
+                    <a class="navbar-brand solid-text-light-two" href="{{ url('/') }}" style="color:white" id="meTymNav">Merge Write</a>
+                    
                 </div>
 
                 <div class="collapse navbar-collapse" id="app-navbar-collapse">
@@ -48,15 +58,17 @@
                             <li><a class="solid-text-light" style="color:white;" href="{{ route('login') }}">Login</a></li>
                             <li><a class="solid-text-light" style="color:white;" href="{{ route('register') }}">Register</a></li>
                         @else
-                            <li ><a href='#' style='color:white'><span class='glyphicon glyphicon-shopping-cart'></span> Shop</a></li>
+                            <li ><a href='#' data-target='#shop-modal' data-toggle='modal' type='button' style='color:white'><span class='glyphicon glyphicon-shopping-cart'></span> Shop</a></li>
                             <li ><a href='{{route('pieces.latest')}}' style='color:white'><span class='glyphicon glyphicon-globe solid-text-light-two solid-text-light-two'></span> Published pieces</a></li>
                             <li class="dropdown">
                                 <a href="#" class="dropdown-toggle solid-text-light-two"  data-toggle="dropdown" style="color:white" role="button" aria-expanded="false">
                                     <strong><span class="glyphicon glyphicon-user" style="color:lime"></span> {{ Auth::user()->name }}</strong> <span class="caret"></span>
                                 </a>
-
                                 <ul class="dropdown-menu solid-text-light-two" role="menu">
-                                    <li><a href='{{ route('home',Session::get('username')) }}'><span class='glyphicon glyphicon-home text text-primary' ></span> Home</a></li>
+                                    <li>
+                                        <a href='{{ route('home',Auth::user()->name) }}'><span class='glyphicon glyphicon-home text text-primary' ></span> Home
+                                        </a>
+                                    </li>
 
                                     <li><a href='{{ route('make.note') }}'><span class='glyphicon glyphicon-comment text text-success' ></span> New Piece</a></li>
                                     <li><a style='cursor:pointer' type='button' data-toggle='modal' data-target='#book-Name'><span class="glyphicon glyphicon-book" style='color:orange'></span> Create book</a></li>
@@ -75,7 +87,6 @@
                                             {{ csrf_field() }}
                                         </form>
                                     </li>
-
                                 </ul>
                             </li>
                         @endif
@@ -84,41 +95,82 @@
             </div>
         </nav>
         @yield('content')
+        @if(!Auth::guest())
+        <div class='left-nav'>
+             <div style='margin:0; background: #111;padding-top:10px; '> 
+                <center>
+                    <img id='user-profile-pic' src={{asset(Auth::user()->profile_picture)}}><br>
+                    <div class='dropdown'>
+                        <small data-toggle='dropdown'style='text-transform: uppercase; color:white'>{{  Auth::user()->name  }}
+                            <a id='name-arrow' class='dropdown-toggle' data-opened='false' style='cursor:pointer'>
+                                <span class='glyphicon glyphicon-triangle-bottom' style='color:white;margin:1px;'></span>
+                            </a>
+                        </small>
+                            <ul class='dropdown-menu' role="menu" id='profile-options' style='left:30px;border:solid 2px teal'>
+                                <li><a href=""><span class='glyphicon glyphicon-user'></span> Profile</a></li>
+                            </ul>
+                        <span class=' {{ 'label label-default solid-rank '.Auth::user()->rank->rank}} '>{{Auth::user()->rank->rank}}</span>
+                    </div>
+                    <hr style='border-color:gray'>
+                </center>
+            </div>
+            <ul class='side-bar-options clearfix' >
+                <li class='clearfix'>
+                    <a href="admin"><i class="glyphicon glyphicon-plus pull-left" style='margin-top:4px;'></i> New Piece</a>
+                </li>                    
+                <li class='clearfix'>
+                    <a href="orders"><i class="glyphicon glyphicon-book pull-left" style='margin-top:4px;'></i> Create Book</a>
+                </li>
+                <li class='clearfix'>
+                    <a href="admin"><i class="glyphicon glyphicon-cog pull-left" style='margin-top:4px;'></i> Settings</a>
+                </li>                    
+                <li class='clearfix'>
+                    <a href="orders"><i class="glyphicon glyphicon-pushpin pull-left" style='margin-top:4px;'></i> Grabs</a>
+                </li>
+                <li class='clearfix'>
+                    <a href="orders"><i class="glyphicon glyphicon-shopping-cart pull-left" style='margin-top:4px;'></i> Rank Shop</a>
+                </li>
+            </ul>
+        </div>
+
+        @endif
     </div>
+
 
     <!-- MAKE NEW BOOK MODAL -->
-    <div class='modal fade' id='book-Name'>
-        <div class='modal-dialog modal-md'>
-            <div class='modal-content'>
-              <div class='modal-header'>
-                  <h4 class='solid-text-light-two' style='color:black'><span style='color:orange' class=' glyphicon glyphicon-book'></span> <b>Make a book</b><button data-dismiss='modal' aria-hidden="true" class='close pull-right'>x</button></h4>
-              </div>
-              <form method='get' action='{{ route('book.create')}}' style='color:black'>
-                  {{csrf_field()}}
-                    <div class='modal-body'>
-                      <small>You are about to start a new book. What would you like the book to be called <b>{{ Session::get('username')}}</b>?</small>
-                      <br>
-                      <br>
-                          <div class='form-group'>
-                              <input class='form-control' name='book_name' placeholder="Book title" data-required='Please provide the title of your book' required>
-                              @if(Auth::user())
-                                  <input type='hidden' value='{{ Auth::user()->id }}' name='user_id'>
-                            @endif
-                          </div>
-                    </div>
-                      <div class='modal-footer'>
-                          <div class='form-group'>
-
-                              <button class='btn btn-danger solid-two-light btn-sm solid-text-light-two'  data-dismiss='modal'>Cancel</button>
-                              <input type='submit' name='send_book_title' style='background:orange; color:white' value='create' class='btn btn-warning solid-text-light-two btn-sm solid-two-light'>
-                          </div>
-                     </div>
-                </form>
-              </div>
+    @if(!Auth::guest())
+        <div class='modal fade' id='book-Name'>
+            <div class='modal-dialog modal-md'>
+                <div class='modal-content'>
+                  <div class='modal-header'>
+                      <h4 class='solid-text-light-two' style='color:black'><span style='color:orange' class=' glyphicon glyphicon-book'></span> <b>Make a book</b><button data-dismiss='modal' aria-hidden="true" class='close pull-right'>x</button></h4>
+                  </div>
+                  <form method='get' action='{{ route('book.create')}}' style='color:black'>
+                      {{csrf_field()}}
+                        <div class='modal-body'>
+                          <small>You are about to start a new book. What would you like the book to be called <b>{{ Auth::user()->name}}</b>?</small>
+                          <br>
+                          <br>
+                              <div class='form-group'>
+                                  <input class='form-control' name='book_name' placeholder="Book title" data-required='Please provide the title of your book' required>
+                                  @if(Auth::user())
+                                      <input type='hidden' value='{{ Auth::user()->id }}' name='user_id'>
+                                @endif
+                              </div>
+                        </div>
+                          <div class='modal-footer'>
+                              <div class='form-group'>
+                                  <button class='btn btn-danger solid-two-light btn-sm solid-text-light-two'  data-dismiss='modal'>Cancel</button>
+                                  <input type='submit' name='send_book_title' style='background:orange; color:white' value='create' class='btn btn-warning solid-text-light-two btn-sm solid-two-light'>
+                              </div>
+                         </div>
+                    </form>
+                  </div>
+                </div>
             </div>
         </div>
-    </div>
-    <footer class='school-color'>
+    @endif
+    <footer class='school-color' >
         <div class="container">
             <div class="row">
                 <div class="col-lg-12 text-center">
@@ -133,5 +185,6 @@
     @yield('scripts')
     <script src="{{ asset('js/app.js') }}"></script>
 </body>
+
 
 </html>

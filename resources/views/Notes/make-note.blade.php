@@ -12,9 +12,9 @@
 						<div class='form-group clearfix'>
 							<br>
 							<label for='' class="dark-knight">Title</label>
-							<input type='name' class='form-control solid-rank'  value ='{{Session::has('temporaryPiece') ? Session::get('temporaryPiece')['title'] : ''}}'id ='piece-title' placeholder='title' name='title'>
+							<input type='name' class='form-control solid-rank'  value ='{{Session::has('temporaryPiece') ? Session::get('temporaryPiece')['title'] : ''}}' id ='piece-title' placeholder='title' name='title'>
 							<br>
-							<label for='' class="dark-knight" >Note</label>
+							<label for='' class="dark-knight">Note</label>
 							<div id='piece-body-coat'>
 								<textarea rows='13'  class='form-control solid-rank clearfix' id ='piece-body' name='note' placeholder='Express yourself'>{{Session::has('temporaryPiece') ? Session::get('temporaryPiece')['body'] : ''}}</textarea>
 							</div>
@@ -75,8 +75,8 @@
 					<div class='dropdown'  id='devicesInUseContent'>
 						{{-- SHOW USERS WHAT DEVICES THEY HAVE USED WITH A DROP DOWN --}}
 						@if(Session::has('devicesExist'))
-							<button type='button' class='btn btn-success solid-rank solid-text-light-two dropdown-toggle' style='width:100%; color:white; background-color:maroon;' id='devicesInUse' data-toggle='dropdown' ><span class='badge'>{{Session::get('DeviceBag')->deviceNumber}}</span> Devices in use <span class='caret'></span></button>
-						    <ul class='dropdown-menu' role='menu' style='width:100%' aria-labelledby="devicesInUse">
+							<button type='button' data-opened='false' class='btn btn-success solid-rank solid-text-light-two dropdown-toggle' style='width:100%; color:white; background-color:maroon;' id='devicesInUse' data-toggle='dropdown' ><span class='badge'>{{Session::get('DeviceBag')->deviceNumber}}</span> Devices in use <span class='caret'></span></button>
+						    <ul class='dropdown-menu dev-array' role='menu' style='width:100%' aria-labelledby="devicesInUse" >
 						        <li role='presentation' class='dropdown-header'>Devices indicated</li>
 						        <li role='presentation' class='divider'></li>
 						        @foreach (Session::get('DeviceBag')->devices as $device)
@@ -97,7 +97,7 @@
 						</form>
 					</div>
 						@if(Session::has('revamp'))
-							<small class='tex-center'>You are in revamp mode, reselect all devices in your piece and save!</small>
+							<small class='tex-center'>You are in revamp mode, reselect all devices in your piece and save!</small><br>
 						@endif
 					<div class='cover-piece-text' id='device-mark-board' data-called-already='' style='display:none;margin-bottom:5px;'>
 						<small class='dark-knight' id='device-mark-title'>Sticker Name</small>
@@ -204,7 +204,7 @@
 					<small data-Hyperbole-sticker=
 					'{{Session::has("DeviceBag") ? array_key_exists(12,Session::get("DeviceBag")->devices) ? Session::get("DeviceBag")->devices[12]['text'] : "" : ""}}'
 					 id='Hyperbole-sticker' class='label label-danger solid-rank eng-tips' style='background-color:black '  data-title='Hyperbole' data-toggle='popover' data-placement='top' data-html='true' data-content="
-						<textarea class='form-control popover-width' rows='3' id='pun-box'></textarea>
+						<textarea class='form-control popover-width' rows='3' id='Hyperbole-box'></textarea>
 						<button class='btn btn-primary btn-xs' id='Hyperbole-add-button'><span class='glyphicon glyphicon-plus'></span> </button>
 						<button class='btn btn-default btn-xs' style='display:none' id='Hyperbole-save-button'>save </button>
 						<button class='btn btn-success btn-xs pink-panther' id='Hyperbole-show-button'>Show All </button>
@@ -291,6 +291,15 @@
 						<button class='btn btn-success btn-xs pink-panther' id='Hyperbaton-show-button'>Show All </button>
 					"> Hyperbaton </small>
 
+					<small data-Thesisstatement-sticker=
+					'{{Session::has("DeviceBag") ? array_key_exists(22,Session::get("DeviceBag")->devices) ? Session::get("DeviceBag")->devices[22]['text'] : "" : ""}}'
+					id='Hyperbaton-sticker' class='label label-danger solid-rank dark-knight eng-tips' style='background-color:#282828; color:white'  data-title='Thesis statement' data-toggle='popover' data-placement='top' data-html='true' data-content="
+						<textarea class='form-control popover-width' rows='3' id='Thesisstatement-box'></textarea>
+						<button class='btn btn-primary btn-xs' id='Thesisstatement-add-button'><span class='glyphicon glyphicon-plus'></span> </button>
+						<button class='btn btn-default btn-xs' style='display:none' id='Thesisstatement-save-button'>save </button>
+						<button class='btn btn-success btn-xs pink-panther' id='Thesisstatement-show-button'>Show All </button>
+					"> Thesis statement</small>
+
 				</div>
 			</div>
 		</div>
@@ -303,7 +312,7 @@
 					<button class='close pull-right' aria-hidden='true' data-dismiss='modal'>x</button>
 					<h4 id='skeleton-title'> Title </h4>
 				</div>
-				<div class='modal-body'>
+				<div class='modal-body' style='max-height:500px; overflow-y:scroll;'>
 					<p id='skeleton-body'>You haven't started your piece, <b>{{Session::get('username')}}</b></p>
 				</div>
 				<div class='modal-footer'>
@@ -317,11 +326,11 @@
 		<div class='modal-dialog modal-md'>
 			<div class='modal-content'>
 				<div class='modal-header'>
-				 	<h4> Title <button class='close pull-right' aria-hidden='true' data-dismiss='modal'>x</button></h4>
+				 	<h4>Devices<button class='close pull-right' aria-hidden='true' data-dismiss='modal'>x</button></h4>
 				</div>
 				<div class='modal-body' style='max-height:400px; overflow-y:scroll' id='modal-body'>
 					@if(Session::has('DeviceBag'))
-						<p>Devices that have been used.
+						<p>Devices that have been used.</p>
 						@foreach (Session::get('DeviceBag')->devices as $device)
 							<hr>
 							@php
@@ -389,6 +398,9 @@
 										break;
 									case 'Hyperbaton':
 										echo "<h3 class='label label-warning solid-rank' style='background-color: yellow ; color:black ;' >".$device['name']."</h3><br><br>";
+										break;
+									case 'Thesisstatement':
+										echo "<h3 class='label label-warning solid-rank' style='background-color: #282828 ; color:white ;' >".$device['name']."</h3><br><br>";
 										break;
 									default:
 										# code...
@@ -507,4 +519,5 @@
 @endsection
 @section('scripts')
 	<script src="{{ asset('js/Newpiece.js') }}"></script>
+	<script src="{{ asset('js/universal.js') }}"></script>
 @endsection

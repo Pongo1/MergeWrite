@@ -1,17 +1,18 @@
 $('body').css('display','none');
   $(document).ready(function(){
-    $('body').fadeIn(800);
+    $('body').fadeIn(200);
     $('#meTym').animate({fontSize:'100px'},1000);
 
-    //Pongo's talking mechanism
+    
 
+    //Pongo's talking mechanism
     setTimeout(function(){
         var s = document.getElementById('pongo-message');
         s.innerHTML = 'I can tell you are new here?';
 
         setTimeout(function(){
             var s = document.getElementById('pongo-message');
-            s.innerHTML = "You are a 'peeker'. Its a good thing, it means you are here to learn. ";
+            s.innerHTML = "You are a 'looker'. Its a good thing, it means you are here to learn. ";
             setTimeout(function(){
                 var s = document.getElementById('pongo-message');
                 s.innerHTML = " I will guide your through the way things here. Just put your finger on anything and I will tell you what it is. ";
@@ -32,14 +33,73 @@ $('body').css('display','none');
         },7000);
     },5000)
 
+    $('#dont-want-to').on('click',function(){
+        $.ajax({
+            method:'get',
+            url:'/remove-instruction'
+        }).done(function(){
+            $('#instructions-Bar').fadeOut(200);
+
+        });
+    });
 
 
+    //  Buy rank
+    //---------------------
+    $('.rank-buy').on('click',function(){
+        rankName = $(this).attr('data-rankName');
+        $.ajax({method:'get',
+                url:'/move-to-rank/'+rankName
+            }).done(function(){
+                $('#shop-page').load('/refresh-shop/').hide().fadeIn(300);
+                });
+    });
     $(function(){
         $('[data-toggle="tooltip"]').tooltip()
     });
 
+    $('.grab-delete').on('click',function(){
+        var piece_id = $(this).attr('data-ID');
+        $.ajax({
+            method:'get',
+            url: '/delete-grab/'+piece_id
+        }).done(function(){
+            //$(this).fadeOut(200);
+            $('#grab-button-'+piece_id).css( 'color', 'white');
+            $('#grab-button-'+piece_id).css( 'background-color', 'red');
+        });
+    });
 
-    //show notifcations ----------------------------------------
+    $('#book-arrow-button').on('click',function(){
+        var This = $(this);
+        var toggled_value = This.attr('data-toggled');
+        if(toggled_value == 'true'){
+            $('#book-shelf').slideUp(300,function(){
+                This.attr('data-toggled','false');
+            });
+        }else{
+            $('#book-shelf').slideDown(300,function(){
+                This.attr('data-toggled','true');
+            });
+        }
+    });
+
+    $('#grabs-arrow-button').on('click',function(){
+        var This = $(this);
+        var toggled_value = This.attr('data-toggled');
+        if(toggled_value == 'true'){
+            $('#grabs-board').slideUp(300,function(){
+                This.attr('data-toggled','false');
+            });
+        }else{
+            $('#grabs-board').slideDown(300,function(){
+                This.attr('data-toggled','true');
+            });
+        }
+    });
+
+
+    //show notifcations ------------------------------------
     $('#B-down').on('click',function(event){
         event.preventDefault();
 
@@ -49,6 +109,7 @@ $('body').css('display','none');
             $('#piece-board').hide(300,function(){
                 This.attr('data-toggled','false');
                 $('#notification-area').fadeIn(500,function(){
+
                     $('#pongo-seat').hide(100);
                 });
             });
@@ -61,7 +122,7 @@ $('body').css('display','none');
             });
         }
     });
-    //----------------------------------------------------------- END OF SHOW NOTIFICATIONS -----------------------------------------------------------------
+    //----------- END OF SHOW NOTIFICATIONS---------------------------------------------------------
 
 
 
@@ -93,8 +154,7 @@ $('body').css('display','none');
 setTimeout(function(){
   $('body').fadeIn(700);
 },1000)
-//-----------------------------------------------------------------------------------------------------------------------------
-
+//-------------------------------------------------------------------------------------
 
 
 

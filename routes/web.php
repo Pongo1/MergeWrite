@@ -10,6 +10,21 @@
 | contains the "web" middleware group. Now create something great!
 |
 */
+
+Route::get('grabbers',function(){
+    //echo(App\User::find(1)->grabs->first()->piece_body);
+
+    echo mt_rand(0,3);
+
+});
+
+Route::get('get-devicez',function(){
+    if(Session::has('DeviceBag')){
+        print_r(Session::get('DeviceBag'));
+    }
+
+
+});
 Route::get('page-not-found',[
     'uses'=>'ErrorController@showError',
     'as'=>'page.unavailable']);
@@ -33,11 +48,66 @@ Route::get('temporary-piece-save','PieceController@temporarySave');
 
 //-----------------------------------------------------------------------------
 
+//----------------------------------------------- BOSSU LINKS ---------------------------------------------
+Route::get('mark-as-read',function(){
+    if(count(Auth::user()->unreadNotifications) !=0){
+        Auth::user()->unreadNotifications->markAsRead();
+    }
+});
+Route::get('remove-instruction','HomeController@removeInst');
 
+Route::get('del-user/{id}',[
+  'uses'=>'BossuController@bossuDelUser',
+  'as'=>'bossu.delete']);
+Route::get('make-mentor/{id}','BossuController@changeRights');
+Route::get('refresh-bossu',[
+  'uses'=>'BossuController@refreshBossu',
+  'as'=>'bossu.refresh']);
 
+Route::get('bossu-authenticated',[
+  'uses'=>'BossuController@authenticateBossu',
+  'as'=>'bossu.authenticate']);
 
+Route::get('bossu',[
+  'uses'=>'BossuController@showBossuLogin',
+  'as'=>'bossu.login']);
+
+Route::get('bossu-search/{userName}',[
+  'uses'=>'BossuController@searchForUser',
+  'as'=>'bossu.search']);
 
 //--------------------------------------------------BOOKLINKS-------------------------------------------------------
+Route::get('mentor-del/{id}','MentorController@mentorDelete');
+Route::get('mentor-done/{id}','MentorController@mentorDone');
+Route::get('refresh-mentee/{id}','MentorController@refreshAwaiting');
+Route::get('send-to-mentor',[
+  'uses'=>'MentorController@inviteMentor',
+  'as'=>'mentor.invite','middleware'=>'auth']);
+
+Route::get('mentee-mark-seen/{piece_id}',[
+  'uses'=>'MentorController@menteeMark',
+  'as'=>'mentee.seen','middleware'=>'auth']);
+
+Route::get('mentor-mark',[
+  'uses'=>'MentorController@mentorMark',
+  'as'=>'mentor.markpiece','middleware'=>'auth']);
+
+Route::get('refresh-shop',[
+  'uses'=>'HomeController@refreshShop',
+  'as'=>'shop.refresh','middleware'=>'auth']);
+
+Route::get('move-to-rank/{rankName}',[
+  'uses'=>'HomeController@buyRank',
+  'as'=>'rank.buy','middleware'=>'auth']);
+
+Route::get('delete-grab/{grabbed_id}',[
+  'uses'=>'PublishesController@deleteGrab',
+  'as'=>'grab.delete','middleware'=>'auth']);
+
+Route::get('grab/{piece_id}',[
+  'uses'=>'PublishesController@doGrabbing',
+  'as'=>'doGrabbing','middleware'=>'auth']);
+
 Route::get('refresh-likes/{piece_id}',[
   'uses'=>'PublishesController@refreshLikes',
   'as'=>'likes.refresh','middleware'=>'auth']);

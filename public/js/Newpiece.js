@@ -2,7 +2,7 @@ $('body').css('display','none');
 
     //--------------------------------------------------------DOCUMENT READY -------------------------------------------------
  $(document).ready(function(){
-    $('body').fadeIn(800);
+    $('body').fadeIn(200);
     $('#meTymNav').animate({fontSize:'25px'},700);
 
     $('#metaphor-sticker').on('click',function(){
@@ -15,6 +15,20 @@ $('body').css('display','none');
             $('#device-mark-board').fadeIn(500);
             devMarkBoard.attr('data-called-already','metaphor-true');
             $('#device-mark-title').text($('#metaphor-sticker').text());
+        }
+    });
+
+    $('#devicesInUse').on('click',function(){
+        var This = $(this);
+        var toggled_value = This.attr('data-opened');
+        if(toggled_value == 'true'){
+            $('.dev-array').slideDown(300);
+            This.attr('data-opened','false');
+
+        }else{
+            $('.dev-array').slideUp(300);
+            This.attr('data-opened','true');
+
         }
     });
 
@@ -110,6 +124,7 @@ $('body').css('display','none');
     addEnglishTip(19,'Euphony');
     addEnglishTip(20,'Flashback');
     addEnglishTip(21,'Hyperbaton');
+    addEnglishTip(22,'Thesisstatement');
 
     var returnDeviceTextWithStyle = function(deviceName,impureTextToStyle,wholeText,placenta){
         //deviceName is obvious
@@ -215,7 +230,7 @@ $('body').css('display','none');
                 break;
             case 'Assonance':
                 for (pureTextToStyle of impureTextToStyle.split('<--->')[placenta].split(':'+deviceName+'-mark'+':')) {
-                    wholeText = wholeText.replace(RegExp(pureTextToStyle,'g'),"<br><div><span class='label label-danger solid-two-light' style='background-color: ash; color:white;'>Assonance</span><span class='dark-knight solid-text-light' style='font-size:15px;'><b>------></b></span><span class='dark-knight solid-two-light' style = 'background-color: ash; color:white; border-radius:10%; padding:5px; border: solid 2px black;'> "+pureTextToStyle+"</span></div>");
+                    wholeText = wholeText.replace(RegExp(pureTextToStyle,'g'),"<br><div><span class='label label-danger solid-two-light' style='background-color: ash; color:white;'>Assonance</span><span class='dark-knight solid-text-light' style='font-size:15px;'><b>------></b></span><span class='dark-knight solid-two-light' style = 'background-color: ash; color:black; border-radius:10%; padding:5px; border: solid 2px black;'> "+pureTextToStyle+"</span></div>");
                 }
                 return wholeText;
                 break;
@@ -241,6 +256,12 @@ $('body').css('display','none');
             case 'Hyperbaton':
                 for (pureTextToStyle of impureTextToStyle.split('<--->')[placenta].split(':'+deviceName+'-mark'+':')) {
                     wholeText = wholeText.replace(RegExp(pureTextToStyle,'g'),"<br><div><span class='label label-danger solid-two-light' style='background-color: yellow; color:black;'>Hyperbaton</span><span class='dark-knight solid-text-light' style='font-size:15px;'><b>------></b></span><span class='dark-knight solid-two-light' style = 'background-color: yellow; padding:5px; border: solid 2px black; border-radius:10%;'> "+pureTextToStyle+"</span></div>");
+                }
+                return wholeText;
+                break;
+            case 'Thesisstatement':
+                for (pureTextToStyle of impureTextToStyle.split('<--->')[placenta].split(':'+deviceName+'-mark'+':')) {
+                    wholeText = wholeText.replace(RegExp(pureTextToStyle,'g'),"<br><div><span class='label label-danger solid-two-light' style='background-color: #282828; color:white; border:1px solid orange;'>Thesis statement</span><span class='dark-knight solid-text-light' style='font-size:15px;'><b>------></b></span><span class='dark-knight solid-two-light' style = 'background-color: #282828 ; color:white; border-radius:10px; padding:5px; border: solid 2px black; border-color:orange'> "+pureTextToStyle+"</span></div>");
                 }
                 return wholeText;
                 break;

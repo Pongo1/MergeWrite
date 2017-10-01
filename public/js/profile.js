@@ -37,19 +37,19 @@ $('body').css('display','none');
             }
             $('.picture1').on('click',function(event){
                 event.preventDefault();
-                selectPic('.picture1','imgs/avartar-samurai.svg');
+                selectPic('.picture1','imgs/chick-samurai-avatar.png');
                 resetOthers('.picture2','.picture3');
             });
 
             $('.picture2').on('click',function(event){
                 event.preventDefault();
-                selectPic('.picture2','imgs/avatar-black.png');
+                selectPic('.picture2','imgs/avatar-female.png');
                 resetOthers('.picture1','.picture3');
 
             });
             $('.picture3').on('click',function(event){
                 event.preventDefault();
-                selectPic('.picture3','imgs/chick-samurai-avatar.png');
+                selectPic('.picture3','imgs/ninja-avatar-male.jpeg');
                 resetOthers('.picture2','.picture1');
             });
 

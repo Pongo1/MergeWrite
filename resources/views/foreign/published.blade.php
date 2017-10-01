@@ -10,13 +10,13 @@
                         <div class='avatar-square solid-rank'>
                             <img src='{{asset($published_piece->profile_picture)}}' class=" pull-left img-responsive avatar-square img-thumbnail">
                         </div>
-                        <h1 class='panel-title dark-knight'>{{$published_piece->publisher_name}}  <small class='{{$published_piece->publisher_rank.' label label default solid-rank dark-knight'}}'> {{$published_piece->publisher_rank}} </small></h1><hr class='piece-post-div'>
+                        <h1 class='panel-title dark-knight mouse'><a style='text-decoration:none;' href='{{'/show-profile/'.$published_piece->publisher_name}}'>{{$published_piece->publisher_name}}  </a><small class='{{$published_piece->publisher_rank.' label label default solid-rank dark-knight'}}'> {{$published_piece->publisher_rank}} </small></h1><hr class='piece-post-div'>
                         <small class='text-center' style='text-transform:uppercase; font-size:0.7em'>A piece from {{$published_piece->publisher_name}}</small>
                         <div class='piece-overflow'>
                             <p>
 
                                     <h4 class='dark-knight solid-text-light-two'>{{$published_piece->piece_title}}</h4>
-                                    {{$published_piece->piece_body}}
+                                    {{count(explode(' ',$published_piece->piece_body)) > 1000 ?  substr($published_piece->piece_body,0,1000).'...' : $published_piece->piece_body}}
                             </p>
                         </div>
                         {{-- ################################# FORM TO SUBMIT ON FULLPIECE CLICK ################--}}
@@ -30,6 +30,7 @@
                             <button data-piece-postID='{{$published_piece->id}}' class='btn btn-danger btn-xs solid-rank piece-modal-button' data-toggle='modal' data-target='{{'#piece-id'.$published_piece->id}}'style='background:maroon;'><span class='glyphicon glyphicon-sunglasses'></span> </button>
                             <button class='btn btn-primary solid-rank btn-xs' onclick='goToFullView("{{$published_piece->id}}")'>
                             Full view </button>
+                            <small class='dark-knight'>{{count(explode(' ',$published_piece->piece_body)).' words'}}</small>
                             <div class=' pull-right ' id='{{'likes-and-coins-'.$published_piece->id}}' style='border-color:black;'>
                                 {{-- check if the user has liked that piece, if so, change button color and show another button  --}}
                                 @if(count($published_piece->likes) > 0)
@@ -64,7 +65,7 @@
                 					<button type='button' class='close' data-dismiss='modal'><span aria-hidden='true'></span>&times;<span class="sr-only"></span></button>
                 					<h3 class='modal-title dark-knight'>{{$published_piece->piece_title}} skeleton</h3>
                 				</div>
-                				<div class='modal-body'>
+                				<div class='modal-body' style='max-height:400px; overflow-y:scroll;'>
                                     <textarea style='display:none' name="name" id='{{'piece-post-skeleton-data-'.$published_piece->id}}' rows="8" cols="80">{{$published_piece->skeleton_form}}</textarea>
                 					<p id='{{'piece-post-skeleton-page-'.$published_piece->id}}'> </p>
                 				</div>
@@ -77,6 +78,14 @@
         </div>
         {{-- End of row --}}
     @empty
+        <div class="thumbnail thumbnail-tune col-md-9 col-lg-9 col-md-offset-2">
+            <p class='dark-knight'>There are no new pieces yet, please stay tuned. People are preparing to publish</p>
+
+        </div>
+
+        <div class="" style='opacity:0; margin-bottom:300px;'>
+
+        </div>
     @endforelse
     </div>
     {{-- End of container --}}
@@ -92,4 +101,5 @@
 @endsection
 @section('scripts')
     <script src="{{ asset('js/published.js') }}"></script>
+    <script src="{{ asset('js/universal.js') }}"></script>
 @endsection

@@ -1,0 +1,63 @@
+P_______________________________________________LARAVEL___________________________________________________P
+THIS IS A FILE THAT CONTAINS ALL INFORMATION ABOUT THE WAY MERGE WRITE OPERATES BEHIND THE SCENE.
+Merger write has 8 custom controllers
+    BookController
+        METHODS IN THIS CONTROLLER AND THEIR FXNS
+            --the names of all these fxns are tell you their fxn, no need!
+            deleteBook
+            showBookView
+            createBook
+            deleteChapter
+            showChapter
+            createPage
+            deletePage
+            editBookName
+            editChapterName
+            editPage
+    ErrorController
+        HAS ONLY ONE FUNCTION
+            ->blade= 404.blade.php
+            showError
+                returns a view for 404 errors as handled in the 'Handler.php' file
+    HomeController
+        EXISTING FUNCTIONS
+        getRank
+            --this is a function that takes a word as parameter. It runs this word through a switch statement, and if there is a rank name that matches the word, it returns all the properties of the rank. The rank cost, rank worth, and....
+        index
+            --loads the necessary information about a user, when they sign in. IE their notes, grabs -+p are like bookmarks p+- , the books, and other important stuff.
+        showProfile[check home.blade.php]
+            --takes a name from it's associate routes and searches the user table for  a match. If the result is positive, a view is loaded, and the information is displayed in a nice format.. [check profile.blade.php]
+        changeProfilePicture
+        removeInst
+            --this function edits the 'new' property of the user. As the showing of registration depends on the user's new property. Every registered user has their 'new' property set = 0 . So anytime they login, the instruction board will always show, until they press 'okay'. This button will hit a route that will visit this method --which will change the 'new' value to 1.
+            'In other words, don't show this shit again'
+    MentorController
+        EXISTING FUNCTIONS
+            mentorDelete
+                --this fxn deletes any invite  they dont want to visit.
+            menteeMark
+                --this fxn saves a mentor's remarks and coins on a piece
+            refreshAwaiting
+                --this fxn works with ajax call. It refreshes a div [check waiting.blade.php]
+            inviteMentor
+                --this fxn links a piece to a mentor, for it to be displayed in the mentor's pane as an invite.
+            mentorDone
+                --this fxn is executed when the mentor is done with marking a piece.
+            mentorMark
+    PieceController
+        EXISTING FUNCTIONS
+            englishTipItem
+                --this fxn makes use of my 'EnglishDeviceBag' class. It runs data from the request it receives through the 'EnglishDeviceBag' and then stores its results in Session. -+p
+            showDevicesModal
+                --this fxn works with ajax calls. Used to refresh a div. [check devicesmodalrefresh.blade.php] -+p
+            forSkeletonText
+                --this also works with ajax calls. [check forSkeleton.blade.php] -+p
+            temporarySave
+                --this fxn works with ajax calls. For a given number of seconds, data is sent through ajax and brought here. This function stores the data in the session. By data I mean, whatever the user has typed. This is why everything a user types still remains even after refresh.
+            delDeviceChild
+                --this function gets rid of any device that a user has used in their piece, per the request content.
+    PublishesController
+    NotesController
+                    P_________________________________________________RAW PHP___________________________________________________P
+                    EnglishDeviceBag
+                    P______________________________________________JAVASCRIPT___________________________________________________P

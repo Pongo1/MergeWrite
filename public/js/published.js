@@ -3,7 +3,8 @@ $('body').css('display','none');
   $(document).ready(function(){
 
       $('[data-toggle="tooltip"]').tooltip();
-        $('body').fadeIn(800);
+
+        $('body').fadeIn(200);
         $('#meTymNav').animate({fontSize:'25px'},700);
 
         $('#fullview-skeleton-page').html(function(){
@@ -64,6 +65,15 @@ $('body').css('display','none');
                     console.log(This.attr('data-toggled'));
                 });
             }
+        });
+
+        $('#grab-button').on('click',function(){
+            $.ajax({
+                method: 'get',
+                url: grabUrl
+            }).done(function(){
+                $('#grab-button').text('Grabbed');
+            });
         });
 
 

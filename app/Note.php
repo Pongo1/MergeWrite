@@ -6,11 +6,16 @@ use Illuminate\Database\Eloquent\Model;
 
 class Note extends Model
 {
-    protected $fillable =['title','note','skeleton_form','published','mother_values','mother_names'];
+    protected $fillable =['title','note','skeleton_form','published','mother_values','mother_names','mentor_remark','marked','mark_coins'];
 
-    public function publish(){
-        return $this->hasOne('App\Publish','parent_piece');
+
+    public function invite(){
+        return $this->hasOne('App\Invite');
     }
+    public function publish(){
+        return $this->hasOne('App\Publish');
+    }
+
 
 
 }

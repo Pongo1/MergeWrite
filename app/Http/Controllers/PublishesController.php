@@ -6,14 +6,44 @@ use Session;
 use App\Note;
 use App\Publish;
 use Auth;
-use Crypt;
 use App\Comment;
 use App\Like;
 use App\PieceAccount;
 use App\UserBank;
 use App\User;
+use App\Grab;
+use App\Notifications\Activities;
+use App\Notifications\Grab as GrabNotifier;
+use App\Notifications\CommentNotification;
 class PublishesController extends Controller
 {
+
+
+    public function deleteGrab($grabbed_id){
+        $exists = Grab::where(['user_id'=>Auth::user()->id,'publish_id'=>$grabbed_id])->first();
+        if ($exists){
+            $exists->delete();
+        }else{
+
+        }
+    }
+    public function doGrabbing($piece_id){
+        //check first if the user has already grabbed the piece
+        $oldGrab = Grab::where(['user_id' =>Auth::user()->id,'publish_id'=>$piece_id])->first();
+        if($oldGrab){
+            //do nothing
+        }else{
+            // --obvi
+            $newGrab = new Grab();
+            $newGrab->user_id = Auth::user()->id;
+            $newGrab->publish_id = $piece_id;
+            $newGrab->save();
+            $fullP = Publish::find($piece_id);
+            $publisher = User::find($fullP->user_id);
+            $publisher->notify(new GrabNotifier(Auth::user(),$fullP));
+        }
+
+    }
 
     public function refreshLikes($piece_id){
         //wont even be used.. lool
@@ -24,34 +54,52 @@ class PublishesController extends Controller
     public function like($piece_id){
         //find the published piece that is being liked
         $foundPublishedPiece = Publish::find($piece_id);
-        $gain = 1 + Auth::user()->rank_worth;
-        //check if the piece already has an account
-        $pieceAccount = PieceAccount::where('publish_id',$piece_id)->first();
-        if($pieceAccount){
-            $pieceAccount->update(['coins' =>$pieceAccount->coins + $gain]);
+        $gain = 1 + Auth::user()->rank->rank_worth/3;
+
+        //CHECK IF THE USER HAS ALREADY LIKED THIS
+        $oldLike = Like::where(['user_id'=>Auth::user()->id,'publish_id'=>$foundPublishedPiece->id])->first();
+        if($oldLike){
+
         }else{
-            $newAccount= new PieceAccount();
-            $newAccount->publish_id = $piece_id;
-            $newAccount->coins = $gain;
-            $newAccount->save();
+
+            //check if the piece already has an account
+            $pieceAccount = PieceAccount::where('publish_id',$piece_id)->first();
+            if($pieceAccount){
+                $pieceAccount->update(['coins' =>$pieceAccount->coins + $gain]);
+            }else{
+                $newAccount= new PieceAccount();
+                $newAccount->publish_id = $piece_id;
+                $newAccount->coins = $gain;
+                $newAccount->save();
+            }
+            //look for the owner of the piece
+            $publisher= User::where('id',$foundPublishedPiece->user_id)->first();
+            //check if the user has a bank account
+            $userBankAccount = UserBank::where('user_id',$publisher->id)->first();
+            if($userBankAccount){
+                //if the user has an account just update their coins
+                $userBankAccount->update(['coins'=>$userBankAccount->coins + $gain]);
+            }else{
+                $newUserBankAccount = new UserBank();
+                $newUserBankAccount->user_id = $publisher->id;
+                $newUserBankAccount->coins = $gain;
+                $newUserBankAccount->save();
+            }
+            $like = new Like();
+            $like->publish_id = $piece_id;
+            $like->user_id = Auth::user()->id;//This user id is for the one who is liking this piece not the author of the piece
+            $like->save();
+            //notify user 
+            if($publisher->id != Auth::user()->id){
+                $publisher->notify(new Activities(Auth::user(),$foundPublishedPiece));
+            }
+
+
+
+
+
         }
-        //look for the owner of the piece
-        $publisher= User::where('id',$foundPublishedPiece->user_id)->first();
-        //check if the user has a bank account
-        $userBankAccount = UserBank::where('user_id',$publisher->id)->first();
-        if($userBankAccount){
-            //if the user has an account just update their coins
-            $userBankAccount->update(['coins'=>$userBankAccount->coins + $gain]);
-        }else{
-            $newUserBankAccount = new UserBank();
-            $newUserBankAccount->user_id = $publisher->id;
-            $newUserBankAccount->coins = $gain;
-            $newUserBankAccount->save();
-        }
-        $like = new Like();
-        $like->publish_id = $piece_id;
-        $like->user_id = Auth::user()->id;//This user id is for the one who is liking this piece not the author of the piece
-        $like->save();
+
     }
 
     public function commentOn(Request $request){
@@ -60,6 +108,8 @@ class PublishesController extends Controller
         $comment->publish_id = $request->piece_id;
         $comment->comment = $request->comment;
         $comment->save();
+        $foundPiece = Publish::find($request->piece_id);
+        User::find($foundPiece->user_id)->notify(new CommentNotification(Auth::user(),$foundPiece));
     }
 
     public function refreshComments($piece_id){
@@ -74,30 +124,18 @@ class PublishesController extends Controller
 
     public function publishPiece($pieceID){
         $found_piece = Note::find($pieceID);
-        $new_publish = new Publish();
-        $new_publish->publisher_name = Auth::user()->name;
-        $new_publish->user_id = Auth::user()->id;
-        $new_publish->profile_picture = Auth::user()->profile_picture;
-        $new_publish->piece_title = $found_piece->title;
-        $new_publish->piece_body = Crypt::decryptString($found_piece->note);
-        $new_publish->skeleton_form = $found_piece->skeleton_form;
-        $new_publish->parent_piece = $found_piece->id;
-        $new_publish->publisher_rank = Auth::user()->rank;
-        if($new_publish->save()){
-            if($found_piece->update(['published'=>1])){
-                return redirect()->route('home',Auth::user()->name)->with('sucess',$found_piece->title.' has been published!');
-            }
+         $found_piece->publish->update(['unpublished'=>0]);
+
+
+        if($found_piece->update(['published'=>1])){
+            return redirect()->route('home',Auth::user()->name)->with('success',$found_piece->title.' has been published!');
         }
+
     }
 
     public function pieceFullShow(Request $request,$pieceName){
-
         $found = Publish::find($request->piece_id);
         return view('foreign.fullview',['found'=>$found]);
-
-
     }
-
-
 
 }

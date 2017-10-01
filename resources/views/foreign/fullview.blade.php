@@ -10,16 +10,17 @@
 
                     <pre style='cursor:pointer; 'class='cute-page cover-piece-text'>{{$found->piece_body}}</pre>
                     <div style='margin-top:15px'></div>
-                    <div class='cover-piece-text pull-right ' style='border-color:black;'><small class='dark-knight'>Rate: </small><button class='merge-currency solid-rank' style='background:orange'></button>
-                    <button class='merge-currency solid-rank' style='background:orange' ></button>
-                    <button class='merge-currency solid-rank' style='background:orange'></button>
-                    <button class='merge-currency solid-rank' style='background:orange'></button>
-                    <button class='merge-currency solid-rank' style='background:orange'></button></div>
+                    <div class='cover-piece-text pull-right ' style='border-color:black;'>
+                        <button class='merge-currency solid-two-light '></button><small class='dark-knight label label-success'>{{ $found->bank->coins}}</small>
+						<small class=' dark-knight label label-danger' style='color:white'>{{ count($found->likes)}} <span class='glyphicon glyphicon-thumbs-up'></span></small>
+                        @if($found->grabbers->where('id',Auth::user()->id)->first())
+                            <button class='btn btn-info solid-rank btn-sm' data-toggle='tooltip' data-placement='top' title='You have already grabbed this.' style='background-color:crimson; color:white'><span class='glyphicon glyphicon-hand'></span>Grabbed</button>
+                        @else
+                            <button id='grab-button' class='btn btn-info solid-rank btn-sm' data-toggle='tooltip' data-placement='top' title='You will find a copy of this piece in your dashboard, after you click this. The owner will be informed of this activity.' style='background-color:crimson; color:white'><span class='glyphicon glyphicon-hand'></span>Grab</button>
+                        @endif
+                    </div>
                     <small class='text text-success' style='margin-top:55px;'>{{'Published '.$found->created_at->diffForHumans().' by '.$found->publisher_name}}</small>
-                    <small style='opacity:0'>sd</small>
-                    <button type="button" class='merge-currency solid-rank' name="button"></button><small class='dark-knight'>50 coins</small>
-
-
+                    <small id='grab-notifier' class='label label-danger' style='background:crimson; color:white; display:none'>Grabbing was successfull!</small>
                 </div>
             </div>
 
@@ -30,11 +31,9 @@
                         <textarea name="....." style='display:none; ' id='fullview-skeleton-container' rows="8" cols="80">{{$found->skeleton_form}}</textarea>
                         <p class='cute-page dark-knight' id='fullview-skeleton-page' style='cursor:pointer'></p>
                     </div>
-
                     @if(count($found->comments) > 0)
                         <button type="button" id='comment-button' data-toggled='false' class='btn btn-default solid-rank dark-knight' style='margin-top:5px;' name="button"> Comments
                             <span id='post-badge' class='badge' >{{count($found->comments)}}</span>
-
                         </button>
                     @else
                         <button type="button" id='comment-button' data-toggled='false' class='btn btn-default solid-rank dark-knight' style='margin-top:5px;' name="button"> Comments <span class='glyphicon glyphicon-comment' ></span></button>
@@ -49,7 +48,7 @@
                     <hr class='normal-merge-div'>
                     <div class="form-group clearfix">
                         <input type="hidden" id="piece-id"  value="{{$found->id}}">
-                        <textarea id="comment" class='form-control' style='border:solid 2px maroon; border-radius:10px;' rows="5" cols="80"></textarea>
+                        <textarea id="comment" class='form-control' style='border:solid 2px maroon; border-radius:10px;' rows="5" cols="80" required></textarea>
                         <button style='width:100px; margin-top:7px;' type="button" name="" id='post' class='btn btn-default solid-rank dark-knight pull-right '>Post</button>
                     </div>
                 </div>
@@ -65,7 +64,7 @@
                                 <div class=" cover-piece-text" style='border-color:black; border-width:1px;' >
                                     <h5 class='label label-default solid-rank solid-text-light-two' style='background-color:purple'>{{$comment->user->name}}</h5>
                                     <small style='opacity:0'></small>
-                                    <span class='{{'label label default solid-rank dark-knight '.$comment->user->rank}}' >{{$comment->user->rank}}</span>
+                                    <span class='{{'label label default solid-rank '.$comment->user->rank->rank}}' >{{$comment->user->rank->rank}}</span>
                                     <small class='text-center dark-knight'>{{$comment->comment}}</small>
                                 </div>
                             @endforeach
@@ -82,8 +81,11 @@
 
 <script type="text/javascript">
     var makeCommentUrl = '{{route('comment.make')}}';
+    var grabUrl = '{{route('doGrabbing',$found->id)}}';
 </script>
 @endsection
 @section('scripts')
     <script src="{{ asset('js/published.js') }}"></script>
+    <script src="{{ asset('js/universal.js') }}"></script>
+
 @endsection

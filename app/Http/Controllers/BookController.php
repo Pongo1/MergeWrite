@@ -7,6 +7,7 @@ use App\Book;
 use App\Chapter;
 use App\Page;
 use Session;
+use Auth;
 
 class BookController extends Controller
 {
@@ -14,7 +15,7 @@ class BookController extends Controller
     public function deleteBook($book_id){
         $book = Book::find($book_id);
         if ($book->delete()){
-            return redirect()->route('home',Session::get('username'))->with('success',"Your book '".$book->Title."'"." has been successfully deleted!");
+            return redirect()->route('home',Auth::user()->name)->with('success',"Your book '".$book->Title."'"." has been successfully deleted!");
         }
 
     }
@@ -33,7 +34,7 @@ class BookController extends Controller
             $book->user_id = $request->user_id;
             $book->Title = $request->book_name;
             if($book->save()){
-                return redirect()->route('home',Session::get('username'))->with('success',"'".$request->book_name."' has been created, Start writing!");
+                return redirect()->route('home',Auth::user()->name)->with('success',"'".$request->book_name."' has been created, Start writing!");
             }
     }
 

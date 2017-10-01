@@ -25,6 +25,24 @@
                                 @endif
                             </div>
                         </div>
+                        {{-- add a default profile_picture --}}
+                        <div class="form-group">
+                            <div class="col-md-6 col-md-offset-4">
+                                <div class='dropdown'>
+                                    <input type="text" name="user_gender" class='form-control pull-left' id='gender-box' style='width:80%' placeholder="Choose your gender"data-dismiss-message='please choose your gender' value="" readonly required>
+                                    <button type="button" data-toggle='dropdown' data-opened='false' class='dropdown-toggle btn btn-default ' id='gender' ><span class='caret'></span></button>
+                                    @if ($errors->has('user_gender'))
+                                        <span class="help-block">
+                                            <strong>{{ $errors->first('user_gender') }}</strong>
+                                        </span>
+                                    @endif
+                                    <ul class='dropdown-menu ' role='menu' aria-labelledby="gender" style='width:300px;' >
+                                        <li role='presentation'  class='gen mouse'><a >Male</a></li>
+                                        <li role='presentation' class='gen mouse'><a >Female</a></li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
 
                         <div class="form-group{{ $errors->has('email') ? ' has-error' : '' }}">
                             <label for="email" class="col-md-4 control-label solid-text-light-two">E-Mail Address</label>
@@ -75,4 +93,8 @@
         </div>
     </div>
 </div>
+@endsection
+
+@section('scripts')
+    <script src="{{ asset('js/merge.js') }}"></script>
 @endsection

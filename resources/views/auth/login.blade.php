@@ -74,3 +74,6 @@
             }
     </style>
 @endsection
+@section('scripts')
+    <script src="{{ asset('js/merge.js') }}"></script>
+@endsection

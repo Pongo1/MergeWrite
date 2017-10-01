@@ -17,7 +17,7 @@ class User extends Authenticatable
      * @var array
      */
     protected $fillable = [
-        'name', 'email', 'password','profile_picture'
+        'name', 'email', 'password','profile_picture','is_mentor','new'
     ];
 
     /**
@@ -29,6 +29,14 @@ class User extends Authenticatable
         'password', 'remember_token',
     ];
 
+
+
+    public function invites(){
+        return $this->hasMany('App\Invite');
+    }
+    public function rank(){
+        return $this->hasOne('App\UserRank');
+    }
     public function publishes(){
         return $this->hasMany('App\Publish');
     }
@@ -49,5 +57,8 @@ class User extends Authenticatable
     }
     public function bank(){
         return $this->hasOne('App\UserBank');
+    }
+    public function grabs(){
+        return $this->belongsToMany('App\Publish');
     }
 }
